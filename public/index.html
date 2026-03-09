@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Habbo — Connexion</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323:wght@400&display=swap');
+
+  :root {
+    --yellow: #FFD700; --orange: #FF6B00; --blue: #1A2A6C;
+    --blue-mid: #2D4A9B; --blue-light: #4A7FD4; --cyan: #00D4FF;
+    --dark: #0A0F2E; --panel: #111830; --border: #2A3F7F; --text: #C8D8FF;
+    --red: #FF4444; --green: #44FF88;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background: var(--dark); font-family: 'VT323', monospace;
+    min-height: 100vh; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; overflow: hidden; position: relative;
+  }
+  body::before {
+    content:''; position:fixed; inset:0;
+    background-image: linear-gradient(rgba(74,127,212,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(74,127,212,0.04) 1px, transparent 1px);
+    background-size: 32px 32px; z-index:0;
+  }
+  .stars { position:fixed; inset:0; z-index:0; pointer-events:none; }
+  .star { position:absolute; background:white; animation: twinkle var(--d,3s) infinite var(--delay,0s); }
+  @keyframes twinkle { 0%,100%{opacity:0.1;transform:scale(1)} 50%{opacity:1;transform:scale(1.4)} }
+
+  .cubes { position:fixed; inset:0; z-index:0; pointer-events:none; }
+  .cube {
+    position:absolute; background:var(--blue-mid);
+    box-shadow:2px 2px 0 #1a3080, inset -2px -2px 0 rgba(0,0,0,0.3);
+    animation: floatCube var(--fd,8s) infinite linear var(--fdelay,0s); opacity:0.3;
+  }
+  @keyframes floatCube {
+    0%{transform:translateY(100vh) rotate(0deg);opacity:0}
+    10%{opacity:0.3} 90%{opacity:0.3}
+    100%{transform:translateY(-100px) rotate(360deg);opacity:0}
+  }
+
+  .container { position:relative; z-index:10; display:flex; flex-direction:column; align-items:center; gap:20px; animation:fadeIn 0.6s ease both; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+
+  .logo { text-align:center; }
+  .logo-main {
+    font-family:'Press Start 2P',monospace; font-size:42px; color:var(--yellow);
+    text-shadow: 4px 4px 0 var(--orange), 8px 8px 0 rgba(255,107,0,0.4), 0 0 40px rgba(255,215,0,0.3);
+    letter-spacing:4px; display:block; line-height:1;
+  }
+  .logo-sub { font-family:'Press Start 2P',monospace; font-size:8px; color:var(--cyan); letter-spacing:6px; margin-top:10px; display:block; opacity:0.8; }
+
+  /* Tabs */
+  .tabs { display:flex; gap:0; width:380px; }
+  .tab {
+    flex:1; padding:10px; font-family:'Press Start 2P',monospace; font-size:8px;
+    letter-spacing:1px; cursor:pointer; border:3px solid var(--border);
+    background:var(--dark); color:rgba(200,216,255,0.4); text-align:center;
+    transition: all 0.15s;
+  }
+  .tab:first-child { border-right:none; }
+  .tab.active { background:var(--panel); color:var(--yellow); border-bottom-color:var(--panel); }
+
+  /* Panel */
+  .panel {
+    background:var(--panel); border:3px solid var(--border); border-top:none;
+    box-shadow: 4px 4px 0 rgba(0,0,0,0.5), 0 0 60px rgba(26,42,108,0.6);
+    padding:28px 32px 24px; width:380px;
+  }
+
+  .form-section { display:none; }
+  .form-section.active { display:block; }
+
+  .field-group { margin-bottom:14px; }
+  label { display:block; font-size:17px; color:var(--cyan); letter-spacing:2px; margin-bottom:5px; text-transform:uppercase; }
+  input[type="text"], input[type="password"] {
+    width:100%; background:#0A0F2E; border:3px solid var(--border);
+    color:white; font-family:'VT323',monospace; font-size:22px;
+    padding:9px 13px; outline:none; letter-spacing:1px; transition:border-color 0.2s, box-shadow 0.2s;
+  }
+  input[type="text"]:focus, input[type="password"]:focus {
+    border-color:var(--cyan); box-shadow:0 0 0 3px rgba(0,212,255,0.1);
+  }
+  input::placeholder { color:rgba(255,255,255,0.2); font-size:18px; }
+
+  .remember { display:flex; align-items:center; gap:10px; margin:10px 0 18px; cursor:pointer; }
+  .remember input[type="checkbox"] { width:18px; height:18px; padding:0; accent-color:var(--cyan); cursor:pointer; }
+  .remember span { font-size:16px; color:var(--text); letter-spacing:1px; user-select:none; }
+
+  .btn-submit {
+    width:100%; background:var(--yellow); color:#1A0A00; border:none;
+    font-family:'Press Start 2P',monospace; font-size:9px; padding:13px;
+    letter-spacing:2px; cursor:pointer;
+    box-shadow: 0 4px 0 var(--orange), 0 8px 0 rgba(0,0,0,0.4);
+    transition:transform 0.08s, box-shadow 0.08s; text-transform:uppercase;
+  }
+  .btn-submit:hover { background:#FFE44D; }
+  .btn-submit:active { transform:translateY(4px); box-shadow:0 0 0 var(--orange); }
+  .btn-submit.green { background:var(--green); box-shadow:0 4px 0 #22AA55, 0 8px 0 rgba(0,0,0,0.4); }
+  .btn-submit.green:hover { background:#66FFAA; }
+  .btn-submit.green:active { box-shadow:0 0 0 #22AA55; }
+
+  /* Message box */
+  .msg-box {
+    display:none; margin-top:12px; padding:8px 12px;
+    font-size:16px; letter-spacing:1px; text-align:center; border:3px solid;
+  }
+  .msg-box.error { background:#2A0A0A; border-color:var(--red); color:#FF8888; }
+  .msg-box.success { background:#0A2A15; border-color:var(--green); color:#88FFAA; }
+
+  /* Password strength */
+  .strength-bar { height:4px; background:#0A0F2E; border:2px solid var(--border); margin-top:5px; overflow:hidden; }
+  .strength-fill { height:100%; width:0%; transition:width 0.3s, background 0.3s; }
+
+  /* Loading */
+  .loading {
+    display:none; position:fixed; inset:0; background:var(--dark); z-index:100;
+    flex-direction:column; align-items:center; justify-content:center; gap:20px;
+  }
+  .loading.active { display:flex; }
+  .loading-title { font-family:'Press Start 2P',monospace; font-size:36px; color:var(--yellow); text-shadow:4px 4px 0 var(--orange); }
+  .loading-text { font-family:'Press Start 2P',monospace; font-size:12px; color:var(--yellow); letter-spacing:3px; animation:pulse 0.8s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+  .progress-bar { width:280px; height:16px; background:var(--panel); border:3px solid var(--border); overflow:hidden; }
+  .progress-fill { height:100%; background:linear-gradient(90deg,var(--cyan),var(--yellow)); width:0%; transition:width 0.3s; }
+</style>
+</head>
+<body>
+
+<div class="stars" id="stars"></div>
+<div class="cubes" id="cubes"></div>
+
+<div class="loading" id="loading">
+  <div class="loading-title">HABBO</div>
+  <div class="loading-text" id="loadingText">CONNEXION...</div>
+  <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+</div>
+
+<div class="container">
+  <div class="logo">
+    <span class="logo-main">HABBO</span>
+    <span class="logo-sub">◆ Hotel ◆</span>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <div class="tab active" id="tab-login" onclick="switchTab('login')">⚡ CONNEXION</div>
+    <div class="tab" id="tab-register" onclick="switchTab('register')">✨ INSCRIPTION</div>
+  </div>
+
+  <!-- Panel -->
+  <div class="panel">
+
+    <!-- LOGIN -->
+    <div class="form-section active" id="form-login">
+      <div class="field-group">
+        <label for="login-user">Pseudo</label>
+        <input type="text" id="login-user" placeholder="Ton pseudo..." autocomplete="username">
+      </div>
+      <div class="field-group">
+        <label for="login-pass">Mot de passe</label>
+        <input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password">
+      </div>
+      <label class="remember">
+        <input type="checkbox" id="remember-me"> <span>Se souvenir de moi</span>
+      </label>
+      <button class="btn-submit" onclick="handleLogin()">▶ ENTRER DANS L'HÔTEL</button>
+      <div class="msg-box" id="login-msg"></div>
+    </div>
+
+    <!-- REGISTER -->
+    <div class="form-section" id="form-register">
+      <div class="field-group">
+        <label for="reg-user">Choisis un pseudo</label>
+        <input type="text" id="reg-user" placeholder="Minimum 3 caractères..." maxlength="20">
+      </div>
+      <div class="field-group">
+        <label for="reg-pass">Mot de passe</label>
+        <input type="password" id="reg-pass" placeholder="Minimum 6 caractères..." oninput="updateStrength(this.value)">
+        <div class="strength-bar"><div class="strength-fill" id="strength-fill"></div></div>
+      </div>
+      <div class="field-group">
+        <label for="reg-pass2">Confirme le mot de passe</label>
+        <input type="password" id="reg-pass2" placeholder="Répète le mot de passe...">
+      </div>
+      <button class="btn-submit green" style="margin-top:6px" onclick="handleRegister()">★ CRÉER MON COMPTE</button>
+      <div class="msg-box" id="register-msg"></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // Stars & cubes
+  const starsEl = document.getElementById('stars');
+  for (let i = 0; i < 80; i++) {
+    const s = document.createElement('div'); s.className = 'star';
+    const size = Math.random() < 0.3 ? 3 : Math.random() < 0.5 ? 2 : 1;
+    s.style.cssText = `width:${size}px;height:${size}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--d:${2+Math.random()*4}s;--delay:${Math.random()*4}s;`;
+    starsEl.appendChild(s);
+  }
+  const cubesEl = document.getElementById('cubes');
+  for (let i = 0; i < 18; i++) {
+    const c = document.createElement('div'); c.className = 'cube';
+    const size = 8 + Math.floor(Math.random()*3)*4;
+    c.style.cssText = `width:${size}px;height:${size}px;left:${Math.random()*100}%;--fd:${10+Math.random()*15}s;--fdelay:${Math.random()*12}s;`;
+    cubesEl.appendChild(c);
+  }
+
+  function switchTab(tab) {
+    document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+    document.getElementById('tab-register').classList.toggle('active', tab === 'register');
+    document.getElementById('form-login').classList.toggle('active', tab === 'login');
+    document.getElementById('form-register').classList.toggle('active', tab === 'register');
+  }
+
+  function showMsg(id, type, text) {
+    const el = document.getElementById(id);
+    el.className = `msg-box ${type}`;
+    el.textContent = (type === 'error' ? '⚠ ' : '✅ ') + text;
+    el.style.display = 'block';
+  }
+
+  function updateStrength(val) {
+    const fill = document.getElementById('strength-fill');
+    let score = 0;
+    if (val.length >= 6) score++;
+    if (val.length >= 10) score++;
+    if (/[A-Z]/.test(val)) score++;
+    if (/[0-9]/.test(val)) score++;
+    if (/[^A-Za-z0-9]/.test(val)) score++;
+    const colors = ['#FF4444','#FF8844','#FFCC44','#88FF44','#44FF88'];
+    fill.style.width = (score / 5 * 100) + '%';
+    fill.style.background = colors[score - 1] || '#333';
+  }
+
+  async function handleLogin() {
+    const username = document.getElementById('login-user').value.trim();
+    const password = document.getElementById('login-pass').value;
+    if (!username || !password) { showMsg('login-msg','error','Remplis tous les champs.'); return; }
+
+    const res = await fetch('/api/login', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ username, password })
+    });
+    const data = await res.json();
+    if (!data.success) { showMsg('login-msg','error', data.message); return; }
+
+    // Animation loading
+    const loading = document.getElementById('loading');
+    const fill = document.getElementById('progressFill');
+    const loadText = document.getElementById('loadingText');
+    loading.classList.add('active');
+    const steps = ['AUTHENTIFICATION...','CHARGEMENT DE L\'HÔTEL...','PRESQUE PRÊT...'];
+    let progress = 0, step = 0;
+    const iv = setInterval(() => {
+      progress += Math.random()*25+10;
+      if (progress>=33&&step===0){step=1;loadText.textContent=steps[1];}
+      if (progress>=66&&step===1){step=2;loadText.textContent=steps[2];}
+      if (progress>=100){clearInterval(iv);fill.style.width='100%';setTimeout(()=>{window.location.href=data.redirect;},400);return;}
+      fill.style.width=Math.min(progress,99)+'%';
+    }, 300);
+  }
+
+  async function handleRegister() {
+    const username = document.getElementById('reg-user').value.trim();
+    const password = document.getElementById('reg-pass').value;
+    const password2 = document.getElementById('reg-pass2').value;
+    if (!username || !password || !password2) { showMsg('register-msg','error','Remplis tous les champs.'); return; }
+    if (password !== password2) { showMsg('register-msg','error','Les mots de passe ne correspondent pas.'); return; }
+
+    const res = await fetch('/api/register', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ username, password })
+    });
+    const data = await res.json();
+    if (!data.success) { showMsg('register-msg','error', data.message); return; }
+
+    showMsg('register-msg','success', data.message + ' Connexion en cours...');
+    setTimeout(() => {
+      document.getElementById('login-user').value = username;
+      switchTab('login');
+    }, 1500);
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      if (document.getElementById('form-login').classList.contains('active')) handleLogin();
+      else handleRegister();
+    }
+  });
+</script>
+</body>
+</html>
