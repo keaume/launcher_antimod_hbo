@@ -174,7 +174,7 @@
       document.getElementById('usernameCard').textContent = data.username;
     });
 
-  function submitCode() {
+  async function submitCode() {
     const code = document.getElementById('codeIdInput').value.trim();
     const fb = document.getElementById('codeFeedback');
     if (!code) {
@@ -183,11 +183,21 @@
       fb.style.display = 'block';
       return;
     }
-    // Ici tu peux envoyer le code à ton backend si besoin
-    fb.className = 'code-feedback success';
-    fb.textContent = '✅ Code enregistré : ' + code;
+    const res = await fetch('/api/save-code', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code })
+    });
+    const data = await res.json();
+    if (!data.success) {
+      fb.className = 'code-feedback error';
+      fb.textContent = '⚠ ' + data.message;
+    } else {
+      fb.className = 'code-feedback success';
+      fb.textContent = '✅ Code enregistré en base !';
+      document.getElementById('codeIdInput').value = '';
+    }
     fb.style.display = 'block';
-    document.getElementById('codeIdInput').value = '';
   }
 
   document.getElementById('codeIdInput').addEventListener('keydown', e => {
