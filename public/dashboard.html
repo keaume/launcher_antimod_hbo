@@ -38,7 +38,6 @@
 
   .content { max-width:860px; margin:40px auto; padding:0 24px; display:flex; flex-direction:column; gap:20px; }
 
-  /* Section générique */
   .section {
     background:var(--panel); border:4px solid var(--border);
     padding:28px 32px; box-shadow:4px 4px 0 rgba(0,0,0,0.5);
@@ -56,11 +55,9 @@
   }
   .section-title span { color:rgba(200,216,255,0.3); font-size:7px; }
 
-  /* Welcome */
   .welcome-text { font-size:26px; line-height:1.6; }
   .welcome-text strong { color:var(--cyan); }
 
-  /* Code ID */
   .code-id-desc {
     font-size:20px; color:var(--text); line-height:1.6; margin-bottom:16px;
     background:rgba(0,212,255,0.05); border-left:4px solid var(--cyan); padding:12px 16px;
@@ -70,7 +67,7 @@
   .code-input {
     flex:1; background:#0A0F2E; border:3px solid var(--border); border-right:none;
     color:white; font-family:'VT323',monospace; font-size:26px;
-    padding:10px 16px; outline:none; letter-spacing:3px; transition:border-color 0.2s;
+    padding:10px 16px; outline:none; letter-spacing:1px; transition:border-color 0.2s;
   }
   .code-input:focus { border-color:var(--cyan); }
   .code-input::placeholder { color:rgba(255,255,255,0.2); font-size:20px; letter-spacing:1px; }
@@ -90,7 +87,16 @@
   .code-feedback.success { background:#0A2A15; border-color:var(--green); color:var(--green); }
   .code-feedback.error { background:#2A0A0A; border-color:var(--red); color:#FF8888; }
 
-  /* Play button */
+  .saved-note-box {
+    margin-top:14px;
+    padding:12px 14px;
+    border:3px solid var(--border);
+    background:#0A0F2E;
+    font-size:20px;
+    line-height:1.5;
+    word-break:break-word;
+  }
+
   .btn-play {
     display:block; width:100%;
     background:var(--yellow); color:#1A0A00; text-decoration:none;
@@ -102,10 +108,8 @@
   .btn-play:hover { background:#FFE44D; }
   .btn-play:active { transform:translateY(4px); box-shadow:0 0 0 var(--orange); }
 
-  /* Grid */
   .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
 
-  /* Status indicator */
   .status-dot { width:10px; height:10px; background:var(--green); display:inline-block; margin-right:8px; animation:blink 2s infinite; }
   @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
 </style>
@@ -123,7 +127,6 @@
 
 <div class="content">
 
-  <!-- Welcome -->
   <div class="section">
     <div class="section-title">🏨 BIENVENUE À L'HÔTEL</div>
     <div class="welcome-text">
@@ -131,20 +134,22 @@
     </div>
   </div>
 
-  <!-- Code ID -->
   <div class="section">
-    <div class="section-title">🔑 CODE D'IDENTIFICATION <span>— HABBO APP</span></div>
+    <div class="section-title">📝 NOTE PERSONNELLE <span>— TON ESPACE</span></div>
     <div class="code-id-desc">
-      Si l'application Habbo te demande un <strong style="color:var(--yellow)">code d'identification</strong>, tu peux le copier-coller ici pour t'authentifier.
+      Tu peux écrire ici une note personnelle liée à ton compte. Elle sera enregistrée dans la base de données.
     </div>
     <div class="code-input-row">
-      <input class="code-input" id="codeIdInput" type="text" placeholder="Colle ton code ici..." maxlength="64">
-      <button class="btn-code" onclick="submitCode()">✔ VALIDER</button>
+      <input class="code-input" id="codeIdInput" type="text" placeholder="Écris ta note ici..." maxlength="255">
+      <button class="btn-code" onclick="submitNote()">✔ VALIDER</button>
     </div>
     <div class="code-feedback" id="codeFeedback"></div>
+
+    <div class="saved-note-box" id="savedNoteBox">
+      Aucune note enregistrée.
+    </div>
   </div>
 
-  <!-- Grid info + jouer -->
   <div class="grid-2">
     <div class="section">
       <div class="section-title">👤 TON COMPTE</div>
@@ -168,44 +173,63 @@
   fetch('/api/me')
     .then(r => r.json())
     .then(data => {
-      if (!data.loggedIn) { window.location.href = '/'; return; }
+      if (!data.loggedIn) {
+        window.location.href = '/';
+        return;
+      }
+
       document.getElementById('usernameDisplay').textContent = data.username;
       document.getElementById('usernameWelcome').textContent = data.username;
       document.getElementById('usernameCard').textContent = data.username;
+
+      const savedNoteBox = document.getElementById('savedNoteBox');
+      if (data.personalNote && data.personalNote.trim()) {
+        savedNoteBox.textContent = 'Dernière note enregistrée : ' + data.personalNote;
+      } else {
+        savedNoteBox.textContent = 'Aucune note enregistrée.';
+      }
     });
 
-  async function submitCode() {
-    const code = document.getElementById('codeIdInput').value.trim();
+  async function submitNote() {
+    const note = document.getElementById('codeIdInput').value.trim();
     const fb = document.getElementById('codeFeedback');
-    if (!code) {
+    const savedNoteBox = document.getElementById('savedNoteBox');
+
+    if (!note) {
       fb.className = 'code-feedback error';
-      fb.textContent = '⚠ Entre un code avant de valider.';
+      fb.textContent = '⚠ Entre une note avant de valider.';
       fb.style.display = 'block';
       return;
     }
-    const res = await fetch('/api/save-code', {
+
+    const res = await fetch('/api/save-note', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ code })
+      body: JSON.stringify({ note })
     });
+
     const data = await res.json();
+
     if (!data.success) {
       fb.className = 'code-feedback error';
       fb.textContent = '⚠ ' + data.message;
     } else {
       fb.className = 'code-feedback success';
-      fb.textContent = '✅ Code enregistré en base !';
+      fb.textContent = '✅ Note enregistrée en base !';
+      savedNoteBox.textContent = 'Dernière note enregistrée : ' + note;
       document.getElementById('codeIdInput').value = '';
     }
+
     fb.style.display = 'block';
   }
 
   document.getElementById('codeIdInput').addEventListener('keydown', e => {
-    if (e.key === 'Enter') submitCode();
+    if (e.key === 'Enter') submitNote();
   });
 
   function logout() {
-    fetch('/api/logout', { method:'POST' }).then(() => window.location.href = '/');
+    fetch('/api/logout', { method: 'POST' })
+      .then(() => window.location.href = '/');
   }
 </script>
 </body>
