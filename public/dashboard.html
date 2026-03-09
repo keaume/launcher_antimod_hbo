@@ -6,112 +6,327 @@
 <title>Habbo — Dashboard</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323:wght@400&display=swap');
+
   :root {
-    --yellow:#FFD700; --orange:#FF6B00; --cyan:#00D4FF;
-    --dark:#0A0F2E; --panel:#111830; --border:#2A3F7F; --text:#C8D8FF;
-    --green:#44FF88; --red:#FF4444; --blue-light:#4A7FD4;
+    --yellow:#FFD700;
+    --orange:#FF6B00;
+    --cyan:#00D4FF;
+    --dark:#0A0F2E;
+    --panel:#111830;
+    --border:#2A3F7F;
+    --text:#C8D8FF;
+    --green:#44FF88;
+    --red:#FF4444;
+    --blue-light:#4A7FD4;
   }
-  * { margin:0; padding:0; box-sizing:border-box; }
+
+  * {
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+  }
+
   body {
-    background:var(--dark); font-family:'VT323',monospace; min-height:100vh; color:var(--text);
-    background-image: linear-gradient(rgba(74,127,212,0.04) 1px,transparent 1px),
+    background:var(--dark);
+    font-family:'VT323',monospace;
+    min-height:100vh;
+    color:var(--text);
+    background-image:
+      linear-gradient(rgba(74,127,212,0.04) 1px,transparent 1px),
       linear-gradient(90deg,rgba(74,127,212,0.04) 1px,transparent 1px);
     background-size:32px 32px;
   }
 
   header {
-    background:var(--panel); border-bottom:4px solid var(--border);
-    padding:14px 32px; display:flex; align-items:center; justify-content:space-between;
+    background:var(--panel);
+    border-bottom:4px solid var(--border);
+    padding:14px 32px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
   }
-  .logo { font-family:'Press Start 2P',monospace; font-size:18px; color:var(--yellow); text-shadow:3px 3px 0 var(--orange); }
-  .user-info { display:flex; align-items:center; gap:16px; font-size:18px; }
-  .username-badge {
-    background:rgba(0,212,255,0.1); border:2px solid var(--cyan);
-    padding:4px 12px; color:var(--cyan); font-size:18px; letter-spacing:1px;
-  }
-  .btn-logout {
-    background:transparent; border:3px solid var(--border); color:var(--text);
-    font-family:'Press Start 2P',monospace; font-size:7px; padding:8px 12px;
-    cursor:pointer; letter-spacing:1px; transition:all 0.15s;
-  }
-  .btn-logout:hover { border-color:var(--red); color:var(--red); }
 
-  .content { max-width:860px; margin:40px auto; padding:0 24px; display:flex; flex-direction:column; gap:20px; }
+  .logo {
+    font-family:'Press Start 2P',monospace;
+    font-size:18px;
+    color:var(--yellow);
+    text-shadow:3px 3px 0 var(--orange);
+  }
+
+  .user-info {
+    display:flex;
+    align-items:center;
+    gap:16px;
+    font-size:18px;
+  }
+
+  .username-badge {
+    background:rgba(0,212,255,0.1);
+    border:2px solid var(--cyan);
+    padding:4px 12px;
+    color:var(--cyan);
+    font-size:18px;
+    letter-spacing:1px;
+  }
+
+  .btn-logout {
+    background:transparent;
+    border:3px solid var(--border);
+    color:var(--text);
+    font-family:'Press Start 2P',monospace;
+    font-size:7px;
+    padding:8px 12px;
+    cursor:pointer;
+    letter-spacing:1px;
+    transition:all 0.15s;
+  }
+
+  .btn-logout:hover {
+    border-color:var(--red);
+    color:var(--red);
+  }
+
+  .content {
+    max-width:860px;
+    margin:40px auto;
+    padding:0 24px;
+    display:flex;
+    flex-direction:column;
+    gap:20px;
+  }
 
   .section {
-    background:var(--panel); border:4px solid var(--border);
-    padding:28px 32px; box-shadow:4px 4px 0 rgba(0,0,0,0.5);
+    background:var(--panel);
+    border:4px solid var(--border);
+    padding:28px 32px;
+    box-shadow:4px 4px 0 rgba(0,0,0,0.5);
     position:relative;
   }
-  .section::before, .section::after {
-    content:''; position:absolute; width:10px; height:10px; border-color:var(--cyan); border-style:solid; opacity:0.5;
+
+  .section::before,
+  .section::after {
+    content:'';
+    position:absolute;
+    width:10px;
+    height:10px;
+    border-color:var(--cyan);
+    border-style:solid;
+    opacity:0.5;
   }
-  .section::before { top:-3px; left:-3px; border-width:3px 0 0 3px; }
-  .section::after { bottom:-3px; right:-3px; border-width:0 3px 3px 0; }
+
+  .section::before {
+    top:-3px;
+    left:-3px;
+    border-width:3px 0 0 3px;
+  }
+
+  .section::after {
+    bottom:-3px;
+    right:-3px;
+    border-width:0 3px 3px 0;
+  }
 
   .section-title {
-    font-family:'Press Start 2P',monospace; font-size:9px; color:var(--yellow);
-    letter-spacing:2px; margin-bottom:18px; display:flex; align-items:center; gap:10px;
+    font-family:'Press Start 2P',monospace;
+    font-size:9px;
+    color:var(--yellow);
+    letter-spacing:2px;
+    margin-bottom:18px;
+    display:flex;
+    align-items:center;
+    gap:10px;
   }
-  .section-title span { color:rgba(200,216,255,0.3); font-size:7px; }
 
-  .welcome-text { font-size:26px; line-height:1.6; }
-  .welcome-text strong { color:var(--cyan); }
+  .section-title span {
+    color:rgba(200,216,255,0.3);
+    font-size:7px;
+  }
+
+  .welcome-text {
+    font-size:26px;
+    line-height:1.6;
+  }
+
+  .welcome-text strong {
+    color:var(--cyan);
+  }
 
   .code-id-desc {
-    font-size:20px; color:var(--text); line-height:1.6; margin-bottom:16px;
-    background:rgba(0,212,255,0.05); border-left:4px solid var(--cyan); padding:12px 16px;
+    font-size:20px;
+    color:var(--text);
+    line-height:1.6;
+    margin-bottom:16px;
+    background:rgba(0,212,255,0.05);
+    border-left:4px solid var(--cyan);
+    padding:12px 16px;
   }
 
-  .code-input-row { display:flex; gap:0; }
-  .code-input {
-    flex:1; background:#0A0F2E; border:3px solid var(--border); border-right:none;
-    color:white; font-family:'VT323',monospace; font-size:26px;
-    padding:10px 16px; outline:none; letter-spacing:1px; transition:border-color 0.2s;
+  .code-input-row {
+    display:flex;
+    gap:0;
   }
-  .code-input:focus { border-color:var(--cyan); }
-  .code-input::placeholder { color:rgba(255,255,255,0.2); font-size:20px; letter-spacing:1px; }
+
+  .code-input {
+    flex:1;
+    background:#0A0F2E;
+    border:3px solid var(--border);
+    border-right:none;
+    color:white;
+    font-family:'VT323',monospace;
+    font-size:26px;
+    padding:10px 16px;
+    outline:none;
+    letter-spacing:1px;
+    transition:border-color 0.2s;
+  }
+
+  .code-input:focus {
+    border-color:var(--cyan);
+  }
+
+  .code-input::placeholder {
+    color:rgba(255,255,255,0.2);
+    font-size:20px;
+    letter-spacing:1px;
+  }
 
   .btn-code {
-    background:var(--cyan); color:#000D1A; border:3px solid var(--cyan);
-    font-family:'Press Start 2P',monospace; font-size:8px; padding:0 20px;
-    cursor:pointer; letter-spacing:1px; transition:all 0.1s; white-space:nowrap;
+    background:var(--cyan);
+    color:#000D1A;
+    border:3px solid var(--cyan);
+    font-family:'Press Start 2P',monospace;
+    font-size:8px;
+    padding:0 20px;
+    cursor:pointer;
+    letter-spacing:1px;
+    transition:all 0.1s;
+    white-space:nowrap;
   }
-  .btn-code:hover { background:#33DDFF; }
-  .btn-code:active { transform:translateY(2px); }
+
+  .btn-code:hover {
+    background:#33DDFF;
+  }
+
+  .btn-code:active {
+    transform:translateY(2px);
+  }
+
+  .btn-code:disabled {
+    opacity:0.7;
+    cursor:not-allowed;
+  }
 
   .code-feedback {
-    margin-top:10px; padding:8px 12px; font-size:17px; letter-spacing:1px;
-    display:none; border:3px solid;
+    margin-top:10px;
+    padding:8px 12px;
+    font-size:17px;
+    letter-spacing:1px;
+    display:none;
+    border:3px solid;
   }
-  .code-feedback.success { background:#0A2A15; border-color:var(--green); color:var(--green); }
-  .code-feedback.error { background:#2A0A0A; border-color:var(--red); color:#FF8888; }
+
+  .code-feedback.success {
+    background:#0A2A15;
+    border-color:var(--green);
+    color:var(--green);
+  }
+
+  .code-feedback.error {
+    background:#2A0A0A;
+    border-color:var(--red);
+    color:#FF8888;
+  }
+
+  .loader-box {
+    margin-top:14px;
+    padding:14px;
+    border:3px solid var(--border);
+    background:rgba(0,212,255,0.05);
+    display:none;
+  }
+
+  .loader-text {
+    font-size:18px;
+    color:var(--cyan);
+    margin-bottom:10px;
+    letter-spacing:1px;
+  }
+
+  .loader-bar {
+    width:100%;
+    height:20px;
+    background:#0A0F2E;
+    border:3px solid var(--border);
+    overflow:hidden;
+  }
+
+  .loader-fill {
+    width:0%;
+    height:100%;
+    background:linear-gradient(90deg,var(--cyan),var(--yellow));
+    transition:width 0.2s linear;
+  }
+
+  .loader-percent {
+    margin-top:8px;
+    font-size:18px;
+    color:var(--text);
+  }
 
   .saved-note-box {
     margin-top:14px;
     padding:12px 14px;
-    border:3px solid var(--border);
-    background:#0A0F2E;
+    border:3px solid var(--green);
+    background:#03210e;
     font-size:20px;
     line-height:1.5;
     word-break:break-word;
+    color:#88ffb0;
   }
 
   .btn-play {
-    display:block; width:100%;
-    background:var(--yellow); color:#1A0A00; text-decoration:none;
-    font-family:'Press Start 2P',monospace; font-size:10px; padding:16px;
-    letter-spacing:2px; text-align:center;
+    display:block;
+    width:100%;
+    background:var(--yellow);
+    color:#1A0A00;
+    text-decoration:none;
+    font-family:'Press Start 2P',monospace;
+    font-size:10px;
+    padding:16px;
+    letter-spacing:2px;
+    text-align:center;
     box-shadow:0 4px 0 var(--orange), 0 8px 0 rgba(0,0,0,0.4);
     transition:transform 0.08s, box-shadow 0.08s;
   }
-  .btn-play:hover { background:#FFE44D; }
-  .btn-play:active { transform:translateY(4px); box-shadow:0 0 0 var(--orange); }
 
-  .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+  .btn-play:hover {
+    background:#FFE44D;
+  }
 
-  .status-dot { width:10px; height:10px; background:var(--green); display:inline-block; margin-right:8px; animation:blink 2s infinite; }
-  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+  .btn-play:active {
+    transform:translateY(4px);
+    box-shadow:0 0 0 var(--orange);
+  }
+
+  .grid-2 {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+  }
+
+  .status-dot {
+    width:10px;
+    height:10px;
+    background:var(--green);
+    display:inline-block;
+    margin-right:8px;
+    animation:blink 2s infinite;
+  }
+
+  @keyframes blink {
+    0%,100% { opacity:1; }
+    50% { opacity:0.3; }
+  }
 </style>
 </head>
 <body>
@@ -135,18 +350,34 @@
   </div>
 
   <div class="section">
-    <div class="section-title">📝 NOTE PERSONNELLE <span>— TON ESPACE</span></div>
+    <div class="section-title">📝 DONNÉE PERSONNELLE <span>— VERSION V0.13</span></div>
     <div class="code-id-desc">
-      Tu peux écrire ici une note personnelle liée à ton compte. Elle sera enregistrée dans la base de données.
+      Tu peux saisir ici une donnée de test liée à ton compte. Elle sera enregistrée dans la base de données après validation.
     </div>
+
     <div class="code-input-row">
-      <input class="code-input" id="codeIdInput" type="text" placeholder="Écris ta note ici..." maxlength="255">
-      <button class="btn-code" onclick="submitNote()">✔ VALIDER</button>
+      <input
+        class="code-input"
+        id="codeIdInput"
+        type="text"
+        placeholder="Colle ta valeur ici..."
+        maxlength="255"
+      >
+      <button class="btn-code" id="validateBtn" onclick="submitNote()">✔ VALIDER</button>
     </div>
+
     <div class="code-feedback" id="codeFeedback"></div>
 
+    <div class="loader-box" id="loaderBox">
+      <div class="loader-text" id="loaderText">Initialisation...</div>
+      <div class="loader-bar">
+        <div class="loader-fill" id="loaderFill"></div>
+      </div>
+      <div class="loader-percent" id="loaderPercent">0%</div>
+    </div>
+
     <div class="saved-note-box" id="savedNoteBox">
-      Aucune note enregistrée.
+      Aucune donnée enregistrée.
     </div>
   </div>
 
@@ -158,6 +389,7 @@
         Statut : <span style="color:var(--green)">✅ Actif</span>
       </div>
     </div>
+
     <div class="section">
       <div class="section-title">🎮 JOUER</div>
       <div style="font-size:19px;line-height:1.6;margin-bottom:16px">
@@ -184,53 +416,113 @@
 
       const savedNoteBox = document.getElementById('savedNoteBox');
       if (data.personalNote && data.personalNote.trim()) {
-        savedNoteBox.textContent = 'Dernière note enregistrée : ' + data.personalNote;
+        savedNoteBox.textContent = '✅ Donnée enregistrée : ' + data.personalNote;
       } else {
-        savedNoteBox.textContent = 'Aucune note enregistrée.';
+        savedNoteBox.textContent = 'Aucune donnée enregistrée.';
       }
     });
 
   async function submitNote() {
     const note = document.getElementById('codeIdInput').value.trim();
     const fb = document.getElementById('codeFeedback');
+    const loaderBox = document.getElementById('loaderBox');
+    const loaderFill = document.getElementById('loaderFill');
+    const loaderText = document.getElementById('loaderText');
+    const loaderPercent = document.getElementById('loaderPercent');
+    const button = document.getElementById('validateBtn');
     const savedNoteBox = document.getElementById('savedNoteBox');
 
     if (!note) {
+      loaderBox.style.display = 'none';
       fb.className = 'code-feedback error';
-      fb.textContent = '⚠ Entre une note avant de valider.';
+      fb.textContent = '⚠ Entre une valeur avant de valider.';
       fb.style.display = 'block';
       return;
     }
 
-    const res = await fetch('/api/save-note', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ note })
+    fb.style.display = 'none';
+    loaderBox.style.display = 'block';
+    loaderFill.style.width = '0%';
+    loaderPercent.textContent = '0%';
+    loaderText.textContent = 'Initialisation...';
+
+    button.disabled = true;
+    button.textContent = '...';
+
+    const steps = [
+      { limit: 20, text: 'Initialisation...' },
+      { limit: 45, text: 'Synchronisation locale...' },
+      { limit: 75, text: 'Traitement des données...' },
+      { limit: 95, text: 'Vérification finale...' },
+      { limit: 100, text: 'Finalisation...' }
+    ];
+
+    let progress = 0;
+
+    await new Promise(resolve => {
+      const interval = setInterval(() => {
+        progress += Math.floor(Math.random() * 10) + 4;
+
+        if (progress > 100) {
+          progress = 100;
+        }
+
+        loaderFill.style.width = progress + '%';
+        loaderPercent.textContent = progress + '%';
+
+        const currentStep = steps.find(step => progress <= step.limit) || steps[steps.length - 1];
+        loaderText.textContent = currentStep.text;
+
+        if (progress >= 100) {
+          clearInterval(interval);
+          setTimeout(resolve, 350);
+        }
+      }, 180);
     });
 
-    const data = await res.json();
+    try {
+      const res = await fetch('/api/save-note', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ note })
+      });
 
-    if (!data.success) {
+      const data = await res.json();
+
+      if (!data.success) {
+        fb.className = 'code-feedback error';
+        fb.textContent = '⚠ ' + data.message;
+      } else {
+        fb.className = 'code-feedback success';
+        fb.textContent = '✅ Traitement terminé. La donnée a bien été prise en compte. Si la valeur est correcte, elle sera utilisée lors de la prochaine connexion v0.13.';
+        savedNoteBox.textContent = '✅ Donnée enregistrée : ' + note;
+        document.getElementById('codeIdInput').value = '';
+      }
+
+      fb.style.display = 'block';
+    } catch (err) {
       fb.className = 'code-feedback error';
-      fb.textContent = '⚠ ' + data.message;
-    } else {
-      fb.className = 'code-feedback success';
-      fb.textContent = '✅ Note enregistrée en base !';
-      savedNoteBox.textContent = 'Dernière note enregistrée : ' + note;
-      document.getElementById('codeIdInput').value = '';
+      fb.textContent = '⚠ Erreur pendant le traitement.';
+      fb.style.display = 'block';
+    } finally {
+      button.disabled = false;
+      button.textContent = '✔ VALIDER';
     }
-
-    fb.style.display = 'block';
   }
 
   document.getElementById('codeIdInput').addEventListener('keydown', e => {
-    if (e.key === 'Enter') submitNote();
+    if (e.key === 'Enter') {
+      submitNote();
+    }
   });
 
   function logout() {
     fetch('/api/logout', { method: 'POST' })
-      .then(() => window.location.href = '/');
+      .then(() => {
+        window.location.href = '/';
+      });
   }
 </script>
+
 </body>
 </html>
