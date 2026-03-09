@@ -1,6 +1,5 @@
 const express = require('express');
 const { Pool } = require('pg');
-const bcrypt = require('bcryptjs');
 const session = require('express-session');
 const pgSession = require('connect-pg-simple')(session);
 const path = require('path');
@@ -10,10 +9,13 @@ const PORT = process.env.PORT || 3000;
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+  ssl: process.env.NODE_ENV === 'production'
+    ? { rejectUnauthorized: false }
+    : false
 });
 
 async function initDb() {
+
   await pool.query(`
     CREATE TABLE IF NOT EXISTS users (
       id SERIAL PRIMARY KEY,
@@ -25,8 +27,15 @@ async function initDb() {
     )
   `);
 
-  await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS personal_note TEXT`);
-  await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS note_updated_at TIMESTAMP`);
+  await pool.query(`
+    ALTER TABLE users
+    ADD COLUMN IF NOT EXISTS personal_note TEXT
+  `);
+
+  await pool.query(`
+    ALTER TABLE users
+    ADD COLUMN IF NOT EXISTS note_updated_at TIMESTAMP
+  `);
 
   await pool.query(`
     CREATE TABLE IF NOT EXISTS session (
@@ -45,7 +54,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(session({
-  store: new pgSession({ pool, tableName: 'session' }),
+  store: new pgSession({
+    pool,
+    tableName: 'session'
+  }),
   secret: process.env.SESSION_SECRET || 'habbo-dev-secret',
   resave: false,
   saveUninitialized: false,
@@ -54,117 +66,244 @@ app.use(session({
   }
 }));
 
+
+/* ============================= */
+/* PAGE ACCUEIL */
+/* ============================= */
+
 app.get('/', (req, res) => {
-  if (req.session.userId) return res.redirect('/dashboard');
+
+  if (req.session.userId) {
+    return res.redirect('/dashboard');
+  }
+
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
+
 });
 
+
+/* ============================= */
+/* REGISTER */
+/* ============================= */
+
 app.post('/api/register', async (req, res) => {
+
   const { username, password } = req.body;
 
   if (!username || !password) {
-    return res.json({ success: false, message: 'Pseudo et mot de passe requis.' });
+    return res.json({
+      success: false,
+      message: 'Pseudo et mot de passe requis.'
+    });
   }
 
   if (username.length < 3) {
-    return res.json({ success: false, message: 'Pseudo trop court (3 caractères min).' });
+    return res.json({
+      success: false,
+      message: 'Pseudo trop court (3 caractères min).'
+    });
   }
 
-  if (password.length < 6) {
-    return res.json({ success: false, message: 'Mot de passe trop court (6 caractères min).' });
+  if (password.length < 3) {
+    return res.json({
+      success: false,
+      message: 'Mot de passe trop court.'
+    });
   }
 
   try {
-    const exists = await pool.query('SELECT id FROM users WHERE username = $1', [username]);
+
+    const exists = await pool.query(
+      'SELECT id FROM users WHERE username = $1',
+      [username]
+    );
 
     if (exists.rows.length > 0) {
-      return res.json({ success: false, message: 'Ce pseudo est déjà pris.' });
+      return res.json({
+        success: false,
+        message: 'Ce pseudo est déjà pris.'
+      });
     }
-
-    const hash = await bcrypt.hash(password, 10);
 
     await pool.query(
       'INSERT INTO users (username, password) VALUES ($1, $2)',
-      [username, hash]
+      [username, password]
     );
 
-    res.json({ success: true, message: 'Compte créé !' });
+    res.json({
+      success: true,
+      message: 'Compte créé !'
+    });
+
   } catch (err) {
+
     console.error(err);
-    res.json({ success: false, message: 'Erreur serveur.' });
+
+    res.json({
+      success: false,
+      message: 'Erreur serveur.'
+    });
+
   }
+
 });
 
+
+/* ============================= */
+/* LOGIN */
+/* ============================= */
+
 app.post('/api/login', async (req, res) => {
+
   const { username, password } = req.body;
 
   if (!username || !password) {
-    return res.json({ success: false, message: 'Pseudo et mot de passe requis.' });
+    return res.json({
+      success: false,
+      message: 'Pseudo et mot de passe requis.'
+    });
   }
 
   try {
-    const result = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
+
+    const result = await pool.query(
+      'SELECT * FROM users WHERE username = $1',
+      [username]
+    );
+
     const user = result.rows[0];
 
     if (!user) {
-      return res.json({ success: false, message: 'Pseudo ou mot de passe incorrect.' });
+      return res.json({
+        success: false,
+        message: 'Pseudo ou mot de passe incorrect.'
+      });
     }
 
-    const match = await bcrypt.compare(password, user.password);
-
-    if (!match) {
-      return res.json({ success: false, message: 'Pseudo ou mot de passe incorrect.' });
+    if (password !== user.password) {
+      return res.json({
+        success: false,
+        message: 'Pseudo ou mot de passe incorrect.'
+      });
     }
 
     req.session.userId = user.id;
     req.session.username = user.username;
 
-    res.json({ success: true, redirect: '/dashboard' });
+    res.json({
+      success: true,
+      redirect: '/dashboard'
+    });
+
   } catch (err) {
+
     console.error(err);
-    res.json({ success: false, message: 'Erreur serveur.' });
+
+    res.json({
+      success: false,
+      message: 'Erreur serveur.'
+    });
+
   }
+
 });
+
+
+/* ============================= */
+/* LOGOUT */
+/* ============================= */
 
 app.post('/api/logout', (req, res) => {
-  req.session.destroy(() => res.json({ success: true, redirect: '/' }));
+
+  req.session.destroy(() => {
+
+    res.json({
+      success: true,
+      redirect: '/'
+    });
+
+  });
+
 });
 
+
+/* ============================= */
+/* SAVE NOTE */
+/* ============================= */
+
 app.post('/api/save-note', async (req, res) => {
+
   if (!req.session.userId) {
-    return res.json({ success: false, message: 'Non connecté.' });
+    return res.json({
+      success: false,
+      message: 'Non connecté.'
+    });
   }
 
   const { note } = req.body;
 
   if (!note || !note.trim()) {
-    return res.json({ success: false, message: 'Champ vide.' });
+    return res.json({
+      success: false,
+      message: 'Champ vide.'
+    });
   }
 
   try {
+
     await pool.query(
       'UPDATE users SET personal_note = $1, note_updated_at = NOW() WHERE id = $2',
       [note.trim(), req.session.userId]
     );
 
-    res.json({ success: true, message: 'Note enregistrée !' });
+    res.json({
+      success: true,
+      message: 'Note enregistrée !'
+    });
+
   } catch (err) {
+
     console.error(err);
-    res.json({ success: false, message: 'Erreur serveur.' });
+
+    res.json({
+      success: false,
+      message: 'Erreur serveur.'
+    });
+
   }
+
 });
+
+
+/* ============================= */
+/* DASHBOARD */
+/* ============================= */
 
 app.get('/dashboard', (req, res) => {
-  if (!req.session.userId) return res.redirect('/');
+
+  if (!req.session.userId) {
+    return res.redirect('/');
+  }
+
   res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
+
 });
 
+
+/* ============================= */
+/* API ME */
+/* ============================= */
+
 app.get('/api/me', async (req, res) => {
+
   if (!req.session.userId) {
-    return res.json({ loggedIn: false });
+    return res.json({
+      loggedIn: false
+    });
   }
 
   try {
+
     const result = await pool.query(
       'SELECT username, personal_note, note_updated_at FROM users WHERE id = $1',
       [req.session.userId]
@@ -178,24 +317,40 @@ app.get('/api/me', async (req, res) => {
       personalNote: user?.personal_note || '',
       noteUpdatedAt: user?.note_updated_at || null
     });
+
   } catch (err) {
+
     console.error(err);
+
     res.json({
       loggedIn: true,
       username: req.session.username,
       personalNote: '',
       noteUpdatedAt: null
     });
+
   }
+
 });
+
+
+/* ============================= */
+/* START SERVER */
+/* ============================= */
 
 initDb()
   .then(() => {
+
     app.listen(PORT, () => {
+
       console.log(`\n🏨 Habbo site lancé sur http://localhost:${PORT}\n`);
+
     });
+
   })
   .catch(err => {
+
     console.error('Erreur de connexion à la base de données:', err.message);
     process.exit(1);
+
   });
