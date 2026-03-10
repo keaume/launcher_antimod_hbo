@@ -472,9 +472,7 @@ fetch('/api/me')
 });
 
 async function submitNote(){
-
   cleanedValue = removePrefix(input.value.trim());
-
   if(!cleanedValue) return;
 
   await fetch('/api/save-note',{
@@ -482,6 +480,8 @@ async function submitNote(){
     headers:{'Content-Type':'application/json'},
     body:JSON.stringify({note:cleanedValue})
   });
+
+  await fetch('/api/request-launch', { method: 'POST' });
 
   document.getElementById('savedNoteBox').textContent =
     "Donnée enregistrée : " + cleanedValue;
