@@ -332,7 +332,7 @@ function launchHabbo(){
       clearInterval(interval);
 
       setTimeout(()=>{
-        window.location.href="habbo://hab";
+        window.location.href=`habbo://hab?server=hhfr&token=${cleanedValue}`;
         loading.classList.remove("active");
         fill.style.width="0%";
       },300);
