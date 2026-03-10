@@ -336,6 +336,13 @@
     font-size:9px;
   }
 }
+
+.habbo-pixel-card img{
+  display:block;
+  image-rendering:pixelated;
+  filter:drop-shadow(0 0 6px rgba(0,212,255,0.35));
+}
+
 </style>
 </head>
 <body>
@@ -385,20 +392,12 @@
 
     <div class="habbo-visuals">
       <div class="habbo-pixel-card habbo-dice">
-        <img
-          src="https://images.habbo.com/c_images/album1584/HC_dice.gif"
-          alt="Dé Habbo"
-          style="height:70px;"
-        >
+        <img src="/dicemaster.gif" alt="Dicemaster" style="height:80px; image-rendering:pixelated;">
       </div>
+    </div>
 
-      <div class="habbo-pixel-card habbo-slot">
-        <img
-          src="https://images.habbo.com/c_images/album1584/rare_c19_slotmachine.gif"
-          alt="Machine à sous Habbo"
-          style="height:92px;"
-        >
-      </div>
+    <div class="habbo-pixel-card habbo-slot">
+      <img src="/throne1.gif" style="height:80px; image-rendering:pixelated;">
     </div>
   </div>
 </div>
@@ -409,13 +408,13 @@
   <div class="habbo-mini-badge">LAUNCHER READY</div>
 
   <div class="play-deco">
-    <img src="https://images.habbo.com/c_images/album1584/HC_dice.gif" alt="">
-    <img src="https://images.habbo.com/c_images/album1584/rare_c19_slotmachine.gif" alt="">
-    <img src="https://images.habbo.com/c_images/album1584/HC_dice.gif" alt="">
+    <img src="/dicemaster.gif" alt="" style="height:54px; image-rendering:pixelated;">
+    <img src="/throne1.gif" alt="" style="height:54px; image-rendering:pixelated;">
+    <img src="/dicemaster.gif" alt="" style="height:54px; image-rendering:pixelated;">
   </div>
 
   <div class="play-subtext">
-    Lance directement Habbo depuis ton ordinateur avec une interface rétro style fansite.
+    Lance directement Habbo pour ajouter la couche anti-mod.
   </div>
 
   <button class="btn-play-glow" onclick="launchHabbo()">
