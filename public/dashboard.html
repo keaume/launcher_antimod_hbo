@@ -188,6 +188,154 @@
     background:linear-gradient(90deg,var(--cyan),var(--yellow));
     width:0%;
   }
+
+  .retro-panel {
+  background:
+    linear-gradient(180deg, rgba(0,212,255,0.04), rgba(255,215,0,0.02)),
+    var(--panel);
+  box-shadow:
+    0 0 0 2px rgba(0,212,255,0.08) inset,
+    4px 4px 0 rgba(0,0,0,0.5),
+    0 0 18px rgba(0,212,255,0.08);
+}
+
+.habbo-showcase {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:24px;
+  flex-wrap:wrap;
+}
+
+.habbo-visuals {
+  display:flex;
+  align-items:flex-end;
+  gap:18px;
+  min-width:220px;
+  justify-content:flex-end;
+}
+
+.habbo-pixel-card {
+  background:#0A0F2E;
+  border:3px solid var(--border);
+  padding:10px;
+  box-shadow:0 0 0 2px rgba(0,212,255,0.05) inset;
+}
+
+.habbo-pixel-card img {
+  display:block;
+  image-rendering:pixelated;
+}
+
+.habbo-dice {
+  animation:floatDice 2.2s ease-in-out infinite;
+}
+
+.habbo-slot {
+  animation:slotPulse 1.8s steps(2) infinite;
+}
+
+@keyframes floatDice {
+  0%,100% { transform:translateY(0px); }
+  50% { transform:translateY(-6px); }
+}
+
+@keyframes slotPulse {
+  0%,100% { transform:translateY(0) scale(1); filter:brightness(1); }
+  50% { transform:translateY(-2px) scale(1.03); filter:brightness(1.15); }
+}
+
+.play-section {
+  text-align:center;
+  padding-top:34px;
+  padding-bottom:38px;
+}
+
+.play-subtext {
+  font-size:23px;
+  line-height:1.6;
+  margin-bottom:20px;
+}
+
+.play-deco {
+  display:flex;
+  justify-content:center;
+  gap:16px;
+  align-items:center;
+  margin-bottom:22px;
+  opacity:0.95;
+}
+
+.play-deco img {
+  image-rendering:pixelated;
+  height:54px;
+}
+
+.btn-play-glow {
+  position:relative;
+  display:inline-block;
+  width:min(100%, 520px);
+  background:linear-gradient(180deg, #FFE44D 0%, #FFD700 52%, #F0B800 100%);
+  color:#1A0A00;
+  text-decoration:none;
+  font-family:'Press Start 2P',monospace;
+  font-size:11px;
+  padding:18px 20px;
+  letter-spacing:2px;
+  text-align:center;
+  border:3px solid #FFF1A6;
+  box-shadow:
+    0 5px 0 var(--orange),
+    0 10px 0 rgba(0,0,0,0.35),
+    0 0 14px rgba(255,215,0,0.35),
+    0 0 26px rgba(0,212,255,0.12);
+  transition:transform 0.08s, box-shadow 0.08s, filter 0.15s;
+  cursor:pointer;
+}
+
+.btn-play-glow:hover {
+  filter:brightness(1.05);
+  box-shadow:
+    0 5px 0 var(--orange),
+    0 10px 0 rgba(0,0,0,0.35),
+    0 0 18px rgba(255,215,0,0.45),
+    0 0 34px rgba(0,212,255,0.2);
+}
+
+.btn-play-glow:active {
+  transform:translateY(5px);
+  box-shadow:
+    0 0 0 var(--orange),
+    0 0 0 rgba(0,0,0,0.35),
+    0 0 18px rgba(255,215,0,0.4);
+}
+
+.habbo-mini-badge {
+  display:inline-block;
+  font-family:'Press Start 2P',monospace;
+  font-size:7px;
+  color:var(--cyan);
+  background:rgba(0,212,255,0.08);
+  border:2px solid var(--cyan);
+  padding:7px 10px;
+  margin-bottom:14px;
+  letter-spacing:1px;
+}
+
+@media (max-width: 760px) {
+  .habbo-showcase {
+    flex-direction:column;
+    align-items:flex-start;
+  }
+
+  .habbo-visuals {
+    justify-content:flex-start;
+  }
+
+  .btn-play-glow {
+    font-size:9px;
+  }
+}
 </style>
 </head>
 <body>
@@ -225,25 +373,54 @@
     </div>
   </div>
 
-  <div class="grid-2">
+<div class="section retro-panel">
+  <div class="section-title">👤 TON COMPTE</div>
 
-    <div class="section">
-      <div class="section-title">👤 TON COMPTE</div>
-      <div>
-        Pseudo : <span id="usernameCard"></span><br>
-        Statut : <span style="color:var(--green)">Actif</span>
+  <div class="habbo-showcase">
+    <div style="font-size:20px;line-height:2">
+      Pseudo : <span style="color:var(--yellow)" id="usernameCard">...</span><br>
+      Statut : <span style="color:var(--green)">✅ Actif</span><br>
+      Hôtel : <span style="color:var(--cyan)">FR</span>
+    </div>
+
+    <div class="habbo-visuals">
+      <div class="habbo-pixel-card habbo-dice">
+        <img
+          src="https://images.habbo.com/c_images/album1584/HC_dice.gif"
+          alt="Dé Habbo"
+          style="height:70px;"
+        >
+      </div>
+
+      <div class="habbo-pixel-card habbo-slot">
+        <img
+          src="https://images.habbo.com/c_images/album1584/rare_c19_slotmachine.gif"
+          alt="Machine à sous Habbo"
+          style="height:92px;"
+        >
       </div>
     </div>
+  </div>
+</div>
 
-    <div class="section">
-      <div class="section-title">🎮 JOUER</div>
-      <button class="btn-play" onclick="launchHabbo()">
-        ▶ OUVRIR HABBO
-      </button>
-    </div>
+<div class="section retro-panel play-section">
+  <div class="section-title">🎮 JOUER</div>
 
+  <div class="habbo-mini-badge">LAUNCHER READY</div>
+
+  <div class="play-deco">
+    <img src="https://images.habbo.com/c_images/album1584/HC_dice.gif" alt="">
+    <img src="https://images.habbo.com/c_images/album1584/rare_c19_slotmachine.gif" alt="">
+    <img src="https://images.habbo.com/c_images/album1584/HC_dice.gif" alt="">
   </div>
 
+  <div class="play-subtext">
+    Lance directement Habbo depuis ton ordinateur avec une interface rétro style fansite.
+  </div>
+
+  <button class="btn-play-glow" onclick="launchHabbo()">
+    ▶ OUVRIR HABBO
+  </button>
 </div>
 
 <div class="loading" id="habboLaunchLoading">
