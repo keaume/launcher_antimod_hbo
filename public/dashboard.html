@@ -19,11 +19,7 @@
     --red:#FF4444;
   }
 
-  * {
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-  }
+  * { margin:0; padding:0; box-sizing:border-box; }
 
   body {
     background:var(--dark);
@@ -52,12 +48,7 @@
     text-shadow:3px 3px 0 var(--orange);
   }
 
-  .user-info {
-    display:flex;
-    align-items:center;
-    gap:16px;
-    font-size:18px;
-  }
+  .user-info { display:flex; align-items:center; gap:16px; font-size:18px; }
 
   .username-badge {
     background:rgba(0,212,255,0.1);
@@ -80,10 +71,7 @@
     transition:all 0.15s;
   }
 
-  .btn-logout:hover {
-    border-color:var(--red);
-    color:var(--red);
-  }
+  .btn-logout:hover { border-color:var(--red); color:var(--red); }
 
   .content {
     max-width:860px;
@@ -102,57 +90,19 @@
     position:relative;
   }
 
-  .section::before,
-  .section::after {
-    content:'';
-    position:absolute;
-    width:10px;
-    height:10px;
-    border-color:var(--cyan);
-    border-style:solid;
-    opacity:0.5;
-  }
-
-  .section::before {
-    top:-3px;
-    left:-3px;
-    border-width:3px 0 0 3px;
-  }
-
-  .section::after {
-    bottom:-3px;
-    right:-3px;
-    border-width:0 3px 3px 0;
-  }
-
   .section-title {
     font-family:'Press Start 2P',monospace;
     font-size:9px;
     color:var(--yellow);
     letter-spacing:2px;
     margin-bottom:18px;
-    display:flex;
-    align-items:center;
-    gap:10px;
   }
 
-  .section-title span {
-    color:rgba(200,216,255,0.3);
-    font-size:7px;
-  }
-
-  .welcome-text {
-    font-size:26px;
-    line-height:1.6;
-  }
-
-  .welcome-text strong {
-    color:var(--cyan);
-  }
+  .welcome-text { font-size:26px; line-height:1.6; }
+  .welcome-text strong { color:var(--cyan); }
 
   .code-id-desc {
     font-size:20px;
-    color:var(--text);
     line-height:1.6;
     margin-bottom:16px;
     background:rgba(0,212,255,0.05);
@@ -160,10 +110,7 @@
     padding:12px 16px;
   }
 
-  .code-input-row {
-    display:flex;
-    gap:0;
-  }
+  .code-input-row { display:flex; }
 
   .code-input {
     flex:1;
@@ -171,22 +118,9 @@
     border:3px solid var(--border);
     border-right:none;
     color:white;
-    font-family:'VT323',monospace;
     font-size:26px;
     padding:10px 16px;
     outline:none;
-    letter-spacing:1px;
-    transition:border-color 0.2s;
-  }
-
-  .code-input:focus {
-    border-color:var(--cyan);
-  }
-
-  .code-input::placeholder {
-    color:rgba(255,255,255,0.2);
-    font-size:20px;
-    letter-spacing:1px;
   }
 
   .btn-code {
@@ -197,79 +131,6 @@
     font-size:8px;
     padding:0 20px;
     cursor:pointer;
-    letter-spacing:1px;
-    transition:all 0.1s;
-    white-space:nowrap;
-  }
-
-  .btn-code:hover {
-    background:#33DDFF;
-  }
-
-  .btn-code:active {
-    transform:translateY(2px);
-  }
-
-  .btn-code:disabled {
-    opacity:0.7;
-    cursor:not-allowed;
-  }
-
-  .code-feedback {
-    margin-top:10px;
-    padding:8px 12px;
-    font-size:17px;
-    letter-spacing:1px;
-    display:none;
-    border:3px solid;
-  }
-
-  .code-feedback.success {
-    background:#0A2A15;
-    border-color:var(--green);
-    color:var(--green);
-  }
-
-  .code-feedback.error {
-    background:#2A0A0A;
-    border-color:var(--red);
-    color:#FF8888;
-  }
-
-  .loader-box {
-    margin-top:14px;
-    padding:14px;
-    border:3px solid var(--border);
-    background:rgba(0,212,255,0.05);
-    display:none;
-  }
-
-  .loader-text {
-    font-size:18px;
-    color:var(--cyan);
-    margin-bottom:10px;
-    letter-spacing:1px;
-  }
-
-  .loader-bar {
-    width:100%;
-    height:20px;
-    background:#0A0F2E;
-    border:3px solid var(--border);
-    overflow:hidden;
-  }
-
-  .loader-fill {
-    width:0%;
-    height:100%;
-    background:linear-gradient(90deg,var(--cyan),var(--yellow));
-    transition:width 0.2s linear;
-  }
-
-  .loader-percent {
-    margin-top:8px;
-    font-size:18px;
-    color:var(--text);
   }
 
   .saved-note-box {
@@ -278,50 +139,26 @@
     border:3px solid var(--green);
     background:#03210e;
     font-size:20px;
-    line-height:1.5;
     word-break:break-word;
     color:#88ffb0;
   }
 
   .btn-play {
-    display:block;
     width:100%;
     background:var(--yellow);
     color:#1A0A00;
-    text-decoration:none;
     font-family:'Press Start 2P',monospace;
     font-size:10px;
     padding:16px;
     letter-spacing:2px;
-    text-align:center;
-    box-shadow:0 4px 0 var(--orange), 0 8px 0 rgba(0,0,0,0.4);
-    transition:transform 0.08s, box-shadow 0.08s;
     border:none;
     cursor:pointer;
-  }
-
-  .btn-play:hover {
-    background:#FFE44D;
-  }
-
-  .btn-play:active {
-    transform:translateY(4px);
-    box-shadow:0 0 0 var(--orange);
   }
 
   .grid-2 {
     display:grid;
     grid-template-columns:1fr 1fr;
     gap:20px;
-  }
-
-  .status-dot {
-    width:10px;
-    height:10px;
-    background:var(--green);
-    display:inline-block;
-    margin-right:8px;
-    animation:blink 2s infinite;
   }
 
   .loading {
@@ -336,25 +173,7 @@
     gap:20px;
   }
 
-  .loading.active {
-    display:flex;
-  }
-
-  .loading-title {
-    font-family:'Press Start 2P',monospace;
-    font-size:36px;
-    color:var(--yellow);
-    text-shadow:4px 4px 0 var(--orange);
-  }
-
-  .loading-text {
-    font-family:'Press Start 2P',monospace;
-    font-size:12px;
-    color:var(--yellow);
-    letter-spacing:3px;
-    animation:pulse 0.8s infinite;
-    text-align:center;
-  }
+  .loading.active { display:flex; }
 
   .progress-bar {
     width:280px;
@@ -368,17 +187,6 @@
     height:100%;
     background:linear-gradient(90deg,var(--cyan),var(--yellow));
     width:0%;
-    transition:width 0.3s;
-  }
-
-  @keyframes pulse {
-    0%,100% { opacity:1; }
-    50% { opacity:0.4; }
-  }
-
-  @keyframes blink {
-    0%,100% { opacity:1; }
-    50% { opacity:0.3; }
   }
 </style>
 </head>
@@ -387,7 +195,6 @@
 <header>
   <div class="logo">HABBO</div>
   <div class="user-info">
-    <span><span class="status-dot"></span>Connecté</span>
     <div class="username-badge" id="usernameDisplay">...</div>
     <button class="btn-logout" onclick="logout()">⏻ DÉCONNEXION</button>
   </div>
@@ -396,37 +203,21 @@
 <div class="content">
 
   <div class="section">
-    <div class="section-title">🏨 BIENVENUE À L'HÔTEL</div>
+    <div class="section-title">🏨 BIENVENUE</div>
     <div class="welcome-text">
-      Salut <strong id="usernameWelcome">...</strong> ! Tu es bien connecté à ton espace Habbo.
+      Salut <strong id="usernameWelcome">...</strong> !
     </div>
   </div>
 
   <div class="section">
-    <div class="section-title">📝 DONNÉE PERSONNELLE <span>— VERSION V0.13</span></div>
+    <div class="section-title">📝 DONNÉE PERSONNELLE</div>
     <div class="code-id-desc">
-      Tu peux saisir ici une donnée de test liée à ton compte. Si la valeur contient un préfixe avant le premier point, il sera retiré automatiquement avant l’enregistrement.
+      Si la valeur commence par <b>hhfr.</b>, ce préfixe sera supprimé automatiquement avant l'enregistrement.
     </div>
 
     <div class="code-input-row">
-      <input
-        class="code-input"
-        id="codeIdInput"
-        type="text"
-        placeholder="Colle ta valeur ici..."
-        maxlength="255"
-      >
-      <button class="btn-code" id="validateBtn" onclick="submitNote()">✔ VALIDER</button>
-    </div>
-
-    <div class="code-feedback" id="codeFeedback"></div>
-
-    <div class="loader-box" id="loaderBox">
-      <div class="loader-text" id="loaderText">Initialisation...</div>
-      <div class="loader-bar">
-        <div class="loader-fill" id="loaderFill"></div>
-      </div>
-      <div class="loader-percent" id="loaderPercent">0%</div>
+      <input class="code-input" id="codeIdInput" placeholder="Colle ta valeur ici">
+      <button class="btn-code" onclick="submitNote()">✔ VALIDER</button>
     </div>
 
     <div class="saved-note-box" id="savedNoteBox">
@@ -435,214 +226,127 @@
   </div>
 
   <div class="grid-2">
+
     <div class="section">
       <div class="section-title">👤 TON COMPTE</div>
-      <div style="font-size:20px;line-height:2">
-        Pseudo : <span style="color:var(--yellow)" id="usernameCard">...</span><br>
-        Statut : <span style="color:var(--green)">✅ Actif</span>
+      <div>
+        Pseudo : <span id="usernameCard"></span><br>
+        Statut : <span style="color:var(--green)">Actif</span>
       </div>
     </div>
 
     <div class="section">
       <div class="section-title">🎮 JOUER</div>
-      <div style="font-size:19px;line-height:1.6;margin-bottom:16px">
-        Lance directement le launcher Habbo depuis ton PC.
-      </div>
-      <button class="btn-play" onclick="launchHabbo()">▶ JOUER SUR HABBO.FR</button>
+      <button class="btn-play" onclick="launchHabbo()">
+        ▶ OUVRIR HABBO
+      </button>
     </div>
+
   </div>
 
 </div>
 
 <div class="loading" id="habboLaunchLoading">
-  <div class="loading-title">HABBO</div>
-  <div class="loading-text" id="habboLaunchText">OUVERTURE DU LAUNCHER...</div>
+  <div>OUVERTURE DU LAUNCHER</div>
   <div class="progress-bar">
     <div class="progress-fill" id="habboLaunchProgress"></div>
   </div>
 </div>
 
 <script>
-  function stripBeforeFirstDot(value) {
-    if (!value) return '';
-    const index = value.indexOf('.');
-    return index !== -1 ? value.substring(index + 1).trim() : value.trim();
+
+let cleanedValue = '';
+
+function removePrefix(value){
+  if(value.startsWith("hhfr.")){
+    return value.substring(5);
+  }
+  return value;
+}
+
+const input = document.getElementById("codeIdInput");
+
+input.addEventListener("paste",()=>setTimeout(cleanInput,10));
+input.addEventListener("input",cleanInput);
+
+function cleanInput(){
+  input.value = removePrefix(input.value.trim());
+}
+
+fetch('/api/me')
+.then(r=>r.json())
+.then(data=>{
+
+  if(!data.loggedIn){
+    window.location.href="/";
+    return;
   }
 
-  fetch('/api/me')
-    .then(r => r.json())
-    .then(data => {
-      if (!data.loggedIn) {
-        window.location.href = '/';
-        return;
-      }
+  document.getElementById('usernameDisplay').textContent=data.username;
+  document.getElementById('usernameWelcome').textContent=data.username;
+  document.getElementById('usernameCard').textContent=data.username;
 
-      document.getElementById('usernameDisplay').textContent = data.username;
-      document.getElementById('usernameWelcome').textContent = data.username;
-      document.getElementById('usernameCard').textContent = data.username;
+  cleanedValue = removePrefix(data.personalNote || "");
 
-      const savedNoteBox = document.getElementById('savedNoteBox');
-      const cleanedNote = stripBeforeFirstDot(data.personalNote || '');
-
-      if (cleanedNote) {
-        savedNoteBox.textContent = '✅ Donnée enregistrée : ' + cleanedNote;
-      } else {
-        savedNoteBox.textContent = 'Aucune donnée enregistrée.';
-      }
-    });
-
-  async function submitNote() {
-    const rawNote = document.getElementById('codeIdInput').value.trim();
-    const cleanedNote = stripBeforeFirstDot(rawNote);
-
-    const fb = document.getElementById('codeFeedback');
-    const loaderBox = document.getElementById('loaderBox');
-    const loaderFill = document.getElementById('loaderFill');
-    const loaderText = document.getElementById('loaderText');
-    const loaderPercent = document.getElementById('loaderPercent');
-    const button = document.getElementById('validateBtn');
-    const savedNoteBox = document.getElementById('savedNoteBox');
-
-    if (!cleanedNote) {
-      loaderBox.style.display = 'none';
-      fb.className = 'code-feedback error';
-      fb.textContent = '⚠ Entre une valeur avant de valider.';
-      fb.style.display = 'block';
-      return;
-    }
-
-    fb.style.display = 'none';
-    loaderBox.style.display = 'block';
-    loaderFill.style.width = '0%';
-    loaderPercent.textContent = '0%';
-    loaderText.textContent = 'Initialisation...';
-
-    button.disabled = true;
-    button.textContent = '...';
-
-    const steps = [
-      { limit: 20, text: 'Initialisation...' },
-      { limit: 45, text: 'Nettoyage de la valeur...' },
-      { limit: 75, text: 'Traitement des données...' },
-      { limit: 95, text: 'Vérification finale...' },
-      { limit: 100, text: 'Finalisation...' }
-    ];
-
-    let progress = 0;
-
-    await new Promise(resolve => {
-      const interval = setInterval(() => {
-        progress += Math.floor(Math.random() * 10) + 4;
-
-        if (progress > 100) {
-          progress = 100;
-        }
-
-        loaderFill.style.width = progress + '%';
-        loaderPercent.textContent = progress + '%';
-
-        const currentStep = steps.find(step => progress <= step.limit) || steps[steps.length - 1];
-        loaderText.textContent = currentStep.text;
-
-        if (progress >= 100) {
-          clearInterval(interval);
-          setTimeout(resolve, 350);
-        }
-      }, 180);
-    });
-
-    try {
-      const res = await fetch('/api/save-note', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ note: cleanedNote })
-      });
-
-      const data = await res.json();
-
-      if (!data.success) {
-        fb.className = 'code-feedback error';
-        fb.textContent = '⚠ ' + data.message;
-      } else {
-        fb.className = 'code-feedback success';
-        fb.textContent = '✅ Traitement terminé. La donnée a bien été prise en compte pour la version v0.13.';
-        savedNoteBox.textContent = '✅ Donnée enregistrée : ' + cleanedNote;
-        document.getElementById('codeIdInput').value = '';
-      }
-
-      fb.style.display = 'block';
-    } catch (err) {
-      fb.className = 'code-feedback error';
-      fb.textContent = '⚠ Erreur pendant le traitement.';
-      fb.style.display = 'block';
-    } finally {
-      button.disabled = false;
-      button.textContent = '✔ VALIDER';
-    }
+  if(cleanedValue){
+    document.getElementById('savedNoteBox').textContent =
+      "Donnée enregistrée : " + cleanedValue;
   }
 
-  function launchHabbo() {
-    const loading = document.getElementById('habboLaunchLoading');
-    const fill = document.getElementById('habboLaunchProgress');
-    const text = document.getElementById('habboLaunchText');
+});
 
-    loading.classList.add('active');
-    fill.style.width = '0%';
-    text.textContent = 'OUVERTURE DU LAUNCHER...';
+async function submitNote(){
 
-    let progress = 0;
-    let step = 0;
-    const steps = [
-      'OUVERTURE DU LAUNCHER...',
-      'CONNEXION AU CLIENT...',
-      'PRESQUE PRÊT...'
-    ];
+  cleanedValue = removePrefix(input.value.trim());
 
-    const interval = setInterval(() => {
-      progress += Math.random() * 22 + 12;
+  if(!cleanedValue) return;
 
-      if (progress >= 35 && step === 0) {
-        step = 1;
-        text.textContent = steps[1];
-      }
-
-      if (progress >= 70 && step === 1) {
-        step = 2;
-        text.textContent = steps[2];
-      }
-
-      if (progress >= 100) {
-        progress = 100;
-        fill.style.width = '100%';
-        clearInterval(interval);
-
-        setTimeout(() => {
-          window.location.href = 'habbo://hab';
-          setTimeout(() => {
-            loading.classList.remove('active');
-            fill.style.width = '0%';
-          }, 1200);
-        }, 300);
-
-        return;
-      }
-
-      fill.style.width = progress + '%';
-    }, 180);
-  }
-
-  document.getElementById('codeIdInput').addEventListener('keydown', e => {
-    if (e.key === 'Enter') {
-      submitNote();
-    }
+  await fetch('/api/save-note',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({note:cleanedValue})
   });
 
-  function logout() {
-    fetch('/api/logout', { method: 'POST' })
-      .then(() => {
-        window.location.href = '/';
-      });
-  }
+  document.getElementById('savedNoteBox').textContent =
+    "Donnée enregistrée : " + cleanedValue;
+
+  input.value="";
+}
+
+function launchHabbo(){
+
+  const loading=document.getElementById("habboLaunchLoading");
+  const fill=document.getElementById("habboLaunchProgress");
+
+  loading.classList.add("active");
+
+  let progress=0;
+
+  const interval=setInterval(()=>{
+
+    progress+=20;
+
+    fill.style.width=progress+"%";
+
+    if(progress>=100){
+      clearInterval(interval);
+
+      setTimeout(()=>{
+        window.location.href="habbo://hab";
+        loading.classList.remove("active");
+        fill.style.width="0%";
+      },300);
+    }
+
+  },200);
+
+}
+
+function logout(){
+  fetch('/api/logout',{method:'POST'})
+  .then(()=>window.location.href='/');
+}
+
 </script>
 
 </body>
