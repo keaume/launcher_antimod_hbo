@@ -491,6 +491,8 @@ async function submitNote(){
 
 function launchHabbo(){
 
+  fetch('/api/request-launch', { method: 'POST' }); 
+
   const loading=document.getElementById("habboLaunchLoading");
   const fill=document.getElementById("habboLaunchProgress");
 

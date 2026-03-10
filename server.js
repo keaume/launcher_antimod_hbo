@@ -28,6 +28,10 @@ async function initDb() {
   `);
 
   await pool.query(`
+  ALTER TABLE users ADD COLUMN IF NOT EXISTS launch_requested BOOLEAN DEFAULT FALSE
+  `);
+
+  await pool.query(`
     ALTER TABLE users
     ADD COLUMN IF NOT EXISTS personal_note TEXT
   `);
@@ -333,6 +337,30 @@ app.get('/api/me', async (req, res) => {
 
 });
 
+/* ============================= */
+/* LAUNCH FLAG */
+/* ============================= */
+
+app.post('/api/request-launch', async (req, res) => {
+  if (!req.session.userId) return res.json({ success: false });
+
+  await pool.query(
+    'UPDATE users SET launch_requested = TRUE WHERE id = $1',
+    [req.session.userId]
+  );
+
+  res.json({ success: true });
+});
+
+app.get('/api/pending-launches', async (req, res) => {
+  const result = await pool.query(
+    'SELECT username, personal_note FROM users WHERE launch_requested = TRUE'
+  );
+
+  await pool.query('UPDATE users SET launch_requested = FALSE WHERE launch_requested = TRUE');
+
+  res.json({ launches: result.rows });
+});
 
 /* ============================= */
 /* START SERVER */
