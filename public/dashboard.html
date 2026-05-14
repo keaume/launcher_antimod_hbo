@@ -481,7 +481,16 @@ function toggleVisibility(){
 }
 
 function cleanInput(){
-  input.value = removePrefix(input.value.trim());
+
+  const cleaned = removePrefix(input.value.trim());
+
+  input.type = "text";
+  input.value = cleaned;
+
+  setTimeout(()=>{
+    input.type = "password";
+  }, 10);
+
 }
 
 fetch('/api/me')
