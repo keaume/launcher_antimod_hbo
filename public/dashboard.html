@@ -520,11 +520,17 @@ async function submitNote(){
   cleanedValue = removePrefix(input.value.trim());
 
   if(!cleanedValue){
+
+    cleanedValue = '';
+
     alert("Veuillez entrer votre donnée.");
     return;
   }
 
   if(cleanedValue.length < 20){
+
+    cleanedValue = '';
+
     alert("Donnée invalide.");
     return;
   }
