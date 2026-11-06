@@ -3,6 +3,10 @@ const path = require('path');
 
 const AUTO_SCRIPT = path.join(__dirname, 'habbo_auto.py');
 
+// En stand-by : mettre à true pour relancer l'automatisation habbo_auto.py.
+// (ou définir la variable d'environnement RUN_AUTO_SCRIPT=1)
+const RUN_AUTO_SCRIPT = process.env.RUN_AUTO_SCRIPT === '1';
+
 const SITE = 'https://launcherantimodhbo-production.up.railway.app';
 const LAUNCHER_SECRET = process.env.LAUNCHER_SECRET;
 
@@ -49,6 +53,11 @@ execFile('rundll32', ['url.dll,FileProtocolHandler', `habbo://hab?server=hhfr&to
   if (err) console.log('Erreur ouverture Habbo:', err.message);
   else console.log('Commande Habbo envoyée');
 });
+
+if (!RUN_AUTO_SCRIPT) {
+  console.log('habbo_auto.py en stand-by (non lancé)');
+  continue;
+}
 
 console.log('Attente 2 secondes avant auto script...');
 
