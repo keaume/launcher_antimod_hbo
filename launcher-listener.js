@@ -1,4 +1,7 @@
-const { exec, execFile } = require('child_process');
+const { execFile } = require('child_process');
+const path = require('path');
+
+const AUTO_SCRIPT = path.join(__dirname, 'habbo_auto.py');
 
 const SITE = 'https://launcherantimodhbo-production.up.railway.app';
 const LAUNCHER_SECRET = process.env.LAUNCHER_SECRET;
@@ -53,7 +56,7 @@ setTimeout(() => {
 
   console.log('Lancement habbo_auto.py...');
 
-  exec('python habbo_auto.py', (err, stdout, stderr) => {
+  execFile('python', [AUTO_SCRIPT], { cwd: __dirname }, (err, stdout, stderr) => {
 
     if (err) {
       console.log('Erreur habbo_auto.py:', err.message);

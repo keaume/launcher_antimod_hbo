@@ -189,6 +189,84 @@
     width:0%;
   }
 
+  /* Écran de chargement au premier plan */
+  .loading-box {
+    background:var(--panel);
+    border:4px solid var(--border);
+    box-shadow:6px 6px 0 rgba(0,0,0,0.6), 0 0 30px rgba(0,212,255,0.15);
+    padding:32px 36px;
+    width:min(92vw, 420px);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:20px;
+    text-align:center;
+  }
+
+  .loading-box img {
+    height:90px;
+    image-rendering:pixelated;
+    animation:floatDice 1.2s ease-in-out infinite;
+  }
+
+  .loading-title {
+    font-family:'Press Start 2P',monospace;
+    font-size:11px;
+    color:var(--yellow);
+    letter-spacing:2px;
+    line-height:1.8;
+  }
+
+  .loading-status {
+    font-size:22px;
+    line-height:1.4;
+    min-height:2.8em;
+  }
+
+  .loading-dots::after {
+    content:'';
+    animation:dots 1.2s steps(4) infinite;
+  }
+
+  @keyframes dots {
+    0%   { content:''; }
+    25%  { content:'.'; }
+    50%  { content:'..'; }
+    75%  { content:'...'; }
+  }
+
+  .loading .progress-bar { width:100%; }
+
+  .progress-fill.indeterminate {
+    width:35%;
+    animation:slide 1.1s linear infinite;
+  }
+
+  @keyframes slide {
+    from { transform:translateX(-100%); }
+    to   { transform:translateX(290%); }
+  }
+
+  .loading.success .loading-title { color:var(--green); }
+  .loading.error .loading-title { color:var(--red); }
+  .loading.success .progress-fill { width:100%; animation:none; background:var(--green); }
+  .loading.error .progress-fill { width:100%; animation:none; background:var(--red); }
+  .loading.success img, .loading.error img { animation:none; }
+
+  .btn-close-loading {
+    display:none;
+    background:transparent;
+    border:3px solid var(--border);
+    color:var(--text);
+    font-family:'Press Start 2P',monospace;
+    font-size:8px;
+    padding:10px 16px;
+    cursor:pointer;
+  }
+
+  .loading.error .btn-close-loading,
+  .loading.success .btn-close-loading { display:inline-block; }
+
   .retro-panel {
   background:
     linear-gradient(180deg, rgba(0,212,255,0.04), rgba(255,215,0,0.02)),
@@ -446,10 +524,15 @@
   </button>
 </div>
 
-<div class="loading" id="habboLaunchLoading">
-  <div>OUVERTURE DU LAUNCHER</div>
-  <div class="progress-bar">
-    <div class="progress-fill" id="habboLaunchProgress"></div>
+<div class="loading" id="habboLaunchLoading" role="dialog" aria-modal="true" aria-live="polite">
+  <div class="loading-box">
+    <img src="/Dicemaster.gif" alt="">
+    <div class="loading-title" id="loadingTitle">CHARGEMENT</div>
+    <div class="loading-status" id="loadingStatus"></div>
+    <div class="progress-bar">
+      <div class="progress-fill indeterminate" id="habboLaunchProgress"></div>
+    </div>
+    <button class="btn-close-loading" onclick="closeLoading()">FERMER</button>
   </div>
 </div>
 
@@ -535,20 +618,27 @@ async function submitNote(){
     return;
   }
 
-  await fetch('/api/save-note',{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({note:cleanedValue})
-  });
+  showLoading("ENREGISTREMENT", "Enregistrement de ta donnée", true);
 
-  await fetch('/api/request-launch', {
-    method:'POST'
-  });
+  try {
+    const res = await fetch('/api/save-note',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({note:cleanedValue})
+    });
+    const data = await res.json();
+    if(!data.success) throw new Error(data.message || "Erreur serveur.");
+  } catch(err) {
+    showLoadingError("Impossible d'enregistrer la donnée. Réessaie.");
+    return;
+  }
 
   document.getElementById('savedNoteBox').textContent =
     "Donnée enregistrée ! Veuillez patienter quelques minutes.";
 
   input.value="";
+
+  await startLaunch();
 }
 
 async function launchHabbo(){
@@ -558,38 +648,83 @@ async function launchHabbo(){
     return;
   }
 
-  await fetch('/api/request-launch', {
-    method:'POST'
-  });
+  showLoading("LANCEMENT", "Envoi de la demande", true);
+  await startLaunch();
+}
 
-  const loading=document.getElementById("habboLaunchLoading");
-  const fill=document.getElementById("habboLaunchProgress");
+/* ============================= */
+/* ÉCRAN DE CHARGEMENT           */
+/* ============================= */
 
+const LAUNCH_DURATION_MS = 60 * 1000;   // durée du faux chargement (1 minute)
+let statusTimer = null;
+
+function showLoading(title, status, dots){
+  const loading = document.getElementById("habboLaunchLoading");
+  loading.classList.remove("success","error");
   loading.classList.add("active");
+  const fill = document.getElementById("habboLaunchProgress");
+  fill.classList.add("indeterminate");
+  fill.style.width = "";
+  setLoadingText(title, status, dots);
+}
 
-  let progress=0;
+function setLoadingText(title, status, dots){
+  document.getElementById("loadingTitle").textContent = title;
+  const el = document.getElementById("loadingStatus");
+  el.textContent = status;
+  el.classList.toggle("loading-dots", !!dots);
+}
 
-  const interval=setInterval(()=>{
+function showLoadingError(message){
+  stopStatusPolling();
+  document.getElementById("habboLaunchLoading").classList.add("error");
+  setLoadingText("ERREUR", message, false);
+}
 
-    progress+=20;
+function showLoadingSuccess(message){
+  stopStatusPolling();
+  document.getElementById("habboLaunchLoading").classList.add("success");
+  setLoadingText("C'EST PARTI !", message, false);
+}
 
-    fill.style.width=progress+"%";
+function closeLoading(){
+  stopStatusPolling();
+  document.getElementById("habboLaunchLoading").classList.remove("active","success","error");
+}
 
-    if(progress>=100){
+function stopStatusPolling(){
+  if(statusTimer){ clearInterval(statusTimer); statusTimer = null; }
+}
 
-      clearInterval(interval);
+async function startLaunch(){
 
-      setTimeout(()=>{
+  try {
+    const res = await fetch('/api/request-launch', { method:'POST' });
+    const data = await res.json();
+    if(!data.success) throw new Error();
+  } catch(err) {
+    showLoadingError("Impossible d'envoyer la demande. Réessaie.");
+    return;
+  }
 
-        loading.classList.remove("active");
-        fill.style.width="0%";
+  setLoadingText("LANCEMENT", "Veuillez patienter", true);
 
-      },300);
+  // Faux chargement : la barre se remplit en LAUNCH_DURATION_MS
+  const fill = document.getElementById("habboLaunchProgress");
+  fill.classList.remove("indeterminate");
+  fill.style.width = "0%";
 
+  const startedAt = Date.now();
+  stopStatusPolling();
+
+  statusTimer = setInterval(()=>{
+    const progress = Math.min(100, (Date.now() - startedAt) / LAUNCH_DURATION_MS * 100);
+    fill.style.width = progress + "%";
+    if(progress >= 100){
+      showLoadingSuccess("Habbo est prêt !");
     }
-
-  },200);
-
+  }, 250);
 }
 
 function logout(){
