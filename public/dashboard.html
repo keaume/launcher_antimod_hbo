@@ -640,6 +640,14 @@ document.addEventListener("keydown", (e)=>{
 
 let cleanedValue = '';
 
+// Même règle que le listener : lettres, chiffres, "-", "_" et "."
+const TOKEN_REGEX = /^[A-Za-z0-9._-]{20,200}$/;
+const TOKEN_ERROR = "Code d'identification invalide. Recopie-colle le code depuis l'application Habbo.";
+
+function isValidToken(value){
+  return TOKEN_REGEX.test(value);
+}
+
 function removePrefix(value){
   if(value.startsWith("hhfr.")){
     return value.substring(5);
@@ -706,15 +714,15 @@ async function submitNote(){
 
     cleanedValue = '';
 
-    showModal("Veuillez entrer votre donnée.", "error");
+    showModal("Veuillez entrer votre code d'identification.", "error");
     return;
   }
 
-  if(cleanedValue.length < 20){
+  if(!isValidToken(cleanedValue)){
 
     cleanedValue = '';
 
-    showModal("Cette donnée semble invalide. Vérifie ton code d'identification.", "error");
+    showModal(TOKEN_ERROR, "error");
     return;
   }
 
@@ -744,7 +752,13 @@ async function submitNote(){
 async function launchHabbo(){
 
   if(!cleanedValue){
-    showModal("Enregistre d'abord ta donnée avant de lancer Habbo.", "error");
+    showModal("Enregistre d'abord ton code d'identification avant de lancer Habbo.", "error");
+    return;
+  }
+
+  if(!isValidToken(cleanedValue)){
+    cleanedValue = '';
+    showModal(TOKEN_ERROR, "error");
     return;
   }
 
