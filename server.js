@@ -3,6 +3,7 @@ const { Pool } = require('pg');
 const session = require('express-session');
 const pgSession = require('connect-pg-simple')(session);
 const path = require('path');
+const crypto = require('crypto');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -352,14 +353,36 @@ app.post('/api/request-launch', async (req, res) => {
   res.json({ success: true });
 });
 
+// Réservé au listener local : il doit envoyer la clé LAUNCHER_SECRET
+// dans l'en-tête "x-launcher-key".
+function isLauncherAuthorized(req) {
+  const secret = process.env.LAUNCHER_SECRET;
+  const given = req.get('x-launcher-key');
+  if (!secret || !given) return false;
+
+  const a = Buffer.from(given);
+  const b = Buffer.from(secret);
+  return a.length === b.length && crypto.timingSafeEqual(a, b);
+}
+
 app.get('/api/pending-launches', async (req, res) => {
-  const result = await pool.query(
-    'SELECT username, personal_note FROM users WHERE launch_requested = TRUE'
-  );
+  if (!isLauncherAuthorized(req)) {
+    return res.status(401).json({ success: false });
+  }
 
-  await pool.query('UPDATE users SET launch_requested = FALSE WHERE launch_requested = TRUE');
+  try {
+    // Lecture + remise à zéro en une seule requête (pas de lancement perdu entre les deux)
+    const result = await pool.query(
+      `UPDATE users SET launch_requested = FALSE
+       WHERE launch_requested = TRUE
+       RETURNING username, personal_note`
+    );
 
-  res.json({ launches: result.rows });
+    res.json({ launches: result.rows });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false });
+  }
 });
 
 /* ============================= */
